@@ -4,6 +4,7 @@ var notID = 0;
 // Window initialization code. Set up the various event handlers
 window.addEventListener("load", function() {
     document.getElementById("send").addEventListener("click", sendMessage);
+    document.getElementById("stop").addEventListener("click", lunchinator.stop);
 
 	// set up the event listeners
 	chrome.notifications.onClosed.addListener(notificationClosed);
@@ -11,6 +12,7 @@ window.addEventListener("load", function() {
 	chrome.notifications.onButtonClicked.addListener(notificationBtnClick);
 	lunchinator.start();
 	lunchinator.onMessageReceived = displayNotification;
+	lunchinator.onPeerAdded = addPeerToTable;
 });
 
 function sendMessage(evt) {
@@ -29,6 +31,13 @@ function displayNotification(sender,msg) {
 	};
 		
 	chrome.notifications.create("id"+notID++, options, creationCallback);
+}
+
+function addPeerToTable(sender) {
+    //console.log(sender);
+    row = document.getElementById("users").insertRow(1);
+    row.insertCell(0).innerHTML = sender;
+    row.insertCell(1).innerHTML = sender;
 }
 
 function creationCallback(notID) {
