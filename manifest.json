@@ -14,8 +14,14 @@
   ],
   "sockets" : { 
 	"udp": { 
-		"send" : ["*:*"], 
+        "send" : ["*:*"],
+        "receive" : ["*:*"], 
 		"bind" : ["*:*"]
 	} 
-  }
+  },
+  "icons": {
+  	"16":"images/lunch16.png",
+	"48":"images/lunch48.png",
+	"128":"images/lunch128.png"
+	}
 }

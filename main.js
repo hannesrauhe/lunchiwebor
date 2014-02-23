@@ -3,49 +3,32 @@ var notID = 0;
 
 // Window initialization code. Set up the various event handlers
 window.addEventListener("load", function() {
-	document.getElementById("image").addEventListener("click", displayNotification);
+    document.getElementById("send").addEventListener("click", sendMessage);
 
 	// set up the event listeners
 	chrome.notifications.onClosed.addListener(notificationClosed);
 	chrome.notifications.onClicked.addListener(notificationClicked);
 	chrome.notifications.onButtonClicked.addListener(notificationBtnClick);
-	
-	chrome.sockets.udp.create({}, function(socketInfo) {
-	  socketId = socketInfo.socketId;
-	  // Setup event handler and bind socket.
-	  chrome.sockets.udp.onReceive.addListener(onReceive);
-	  chrome.sockets.udp.bind(socketId,
-	    "0.0.0.0", 50000, function(result) {
-	      if (result < 0) {
-	        console.log("Error binding socket.");
-	        return;
-	      }
-	      a = new ArrayBuffer("HELO World");
-	      chrome.sockets.udp.send(socketId, a,
-	        '127.0.0.1', 50000, function(sendInfo) {
-	          console.log("sent " + sendInfo.bytesSent);
-	      });
-	  });
-	});
+	lunchinator.start();
+	lunchinator.onMessageReceived = displayNotification;
 });
 
-function onReceive(evt) {
-	console.log("Received something on UDP "+evt);
-	displayNotification(evt);
+function sendMessage(evt) {
+    lunchinator.call(document.getElementById("messageToSend").value);
 }
 
-function displayNotification(evt) {
+function displayNotification(sender,msg) {
 	var options = {
 		type : "image",
-		title: "Image Notification",
-		message: "Short message plus an image",
+		title: "Message from "+sender,
+		message: /*"Text: "+*/msg,
 		imageUrl: chrome.runtime.getURL("/images/lunch.png"),
-		iconUrl: chrome.runtime.getURL("/images/lunch.png"),
+		iconUrl: chrome.runtime.getURL("/images/lunch128.png"),
 		priority: 0,
 		buttons: []
 	};
 		
-	chrome.notifications.create(evt+"id"+notID++, options, creationCallback);
+	chrome.notifications.create("id"+notID++, options, creationCallback);
 }
 
 function creationCallback(notID) {
